@@ -1,23 +1,46 @@
-import logo from './logo.svg';
 import './App.css';
+import ItemList from './components/ItemList';
+import { useState } from 'react';
+import itemsData from "./data/items.json";
+import AddItemForm from './components/AddItemForm';
 
 function App() {
+  const [items, setItems] = useState(itemsData);
+  const [editingItem, setEditingItem] = useState(null)
+
+  const addItem = (newItem) => {
+    setItems([...items,{id: Date.now(), ...newItem}]);
+  }
+
+  const handleDelete = (id) => {
+    setItems(items.filter((item) => item.id != id))
+  }
+
+  const handleEdit = (editItem) => {
+    setEditingItem(editItem);
+  }
+
+  const handleUpdate = (updatedItem) => {
+    const updatedList = items.map(item => 
+      item.id === updatedItem.id ? updatedItem : item
+    )
+
+    setItems(updatedList);
+    setEditingItem(null);
+  }
+
+  console.log(itemsData)
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className='row'>
+        <div className='column'>
+        <ItemList items={items} onDelete={handleDelete} onEdit={handleEdit}/>
+        </div>
+        <div className='column'>
+        <AddItemForm onAdd={addItem} editingItem={editingItem} onUpdate={handleUpdate}  />
+        </div>
+      </div>
+   
     </div>
   );
 }
